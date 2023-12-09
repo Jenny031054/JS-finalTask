@@ -227,20 +227,15 @@ function validForm(){
     let orderUserObj = {};
    
     orderInfoAllInput.forEach((item,index)=>{
-
-        orderInfoMessage.forEach( (message) =>{ 
-        message.classList.add("d-none");
-        console.log(item.value)
-        if(item.value == ""){
-            orderInfoMessage[index].classList.remove("d-none");
-            console.log("沒填")
-        }else if(item.value !== ""){
-         
-            orderInfoMessage[index].classList.add("d-none");
-            console.log("有填")
-        };
-        });
-        
+        item.addEventListener('change',function(e){
+            // 判斷有沒有填寫內容，沒有的話相對應的Message索引顯示"必填"
+            
+            if(e.target.value !== ""){
+                orderInfoMessage[index].classList.add("d-none");
+            }else{
+                orderInfoMessage[index].classList.remove("d-none");
+            }
+        });       
     });
    
     if(customerName.value =="" ||customerPhone.value =="" || customerEmail.value ==""  || customerAddress.value ==""  || tradeWay .value ==""){
@@ -249,6 +244,8 @@ function validForm(){
     
       
 };
+validForm();
+
 // 點擊送出訂單按鈕
 orderInfoForm.addEventListener('click',(e)=>{
     e.preventDefault();
@@ -264,7 +261,7 @@ orderInfoForm.addEventListener('click',(e)=>{
           }
         }
       };
-    console.log(orderObj)
+    // console.log(orderObj)
     if(cartData.length === 0){
         alert("購物車空空der")
     };
@@ -274,17 +271,20 @@ orderInfoForm.addEventListener('click',(e)=>{
         console.log("送出資料");
         validForm();
         createOrder(orderObj);
-        
+        document.querySelector('#customerName').value="";
+        document.querySelector('#customerPhone').value="";
+        document.querySelector('#customerEmail').value="";
+       document.querySelector('#customerAddress').value=""  
+       
                
     }
 });
 function clearForm(){
     // 清除表單資訊
-    customerName.value =="" 
-    customerPhone.value =="" 
-    customerEmail.value ==""  
-    customerAddress.value ==""  
-    tradeWay.value =="";
+    orderInfoAllInput.forEach((item)=>{
+        item.value == "";
+        console.log(item.value)
+    })
     
   
 

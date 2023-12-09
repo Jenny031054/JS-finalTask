@@ -703,6 +703,14 @@ body {
   text-indent: 1rem;
   margin-right: 10px;
 }
+.orderInfo-input-select {
+  width: 100%;
+  min-height: 38px;
+  border: 1px solid #CED4DA;
+  border-radius: 5px;
+  text-indent: 1rem;
+  margin-right: 10px;
+}
 
 .orderInfo-inputWrap {
   position: relative;

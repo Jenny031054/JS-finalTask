@@ -1,4 +1,4 @@
-
+if (window.location.href.includes('manager.html')) {
 //用在圓餅圖上的物件，在renderOrders()就組好了
 let productObj = {};
 // 渲染圓餅圖表
@@ -11,11 +11,10 @@ function renderC3(){
         let itemArr = [];
         itemArr.push(i);
         itemArr.push(productObj[i]);
-        console.log(itemArr);
+        
         newColumnsType.push(itemArr)
     })
-    console.log(newColumnsArr);
-    console.log(newColumnsType);
+   
     // C3.js
     let chart = c3.generate({
         bindto: '#chart', // HTML 元素綁定
@@ -65,13 +64,13 @@ function init(){
 const orderPageBody = document.querySelector(".orderPage-body");
 console.log(orderPageBody);
 
-function renderOrders(){
+function renderOrders(ordersData){
   let str="";
   
   ordersData.forEach((i)=>{
     // 組好訂單日期
     let orderTime = new Date(i.createdAt*1000);
-    console.dir(orderTime)
+    
     let newOrderTime =`${orderTime.getFullYear()}/${orderTime.getMonth()+1}/${orderTime.getDate()}`
 
     // 組好訂單品項內容
@@ -83,7 +82,6 @@ function renderOrders(){
         } X ${productItem.quantity}</p>`;
         // 判斷裡面有沒有這個品項
         if(productObj[productItem.category] == undefined){
-            console.log("新來的");
             productObj[productItem.category] = productItem.quantity*productItem.price
         }else{
             productObj[productItem.category] += productItem.quantity*productItem.price
@@ -91,7 +89,7 @@ function renderOrders(){
         
      });
     
-     console.log(productObj);
+     
 
     // 組好訂單狀態
     let orderStatus = "";
@@ -100,7 +98,7 @@ function renderOrders(){
     }else{
         orderStatus = "未處理"
     };
-    console.log(i.paid)
+    
     // 整條訂單資訊
      str += 
     `
@@ -119,7 +117,8 @@ function renderOrders(){
         </td>
         <td>${newOrderTime}</td>
         <td class="orderStatus">
-        <a href="#" class="jsOrderStatusBtn" data-status="${i.paid}"  data-id="${i.id}">${orderStatus}</a>
+        <a href="#" class="jsOrderStatusBtn" data-status="${i.paid}"  data-id="${i.id}">
+        ${orderStatus}</a>
         </td>
         <td>
         <input type="button" class="jsOrderDelBtn delSingleOrder-Btn" value="刪除" data-id="${i.id}">
@@ -142,15 +141,15 @@ orderPageBody.addEventListener('click',(e)=>{
         console.log(delOrderId);
         deleteOrder(delOrderId)
     }else if(eTarget.includes("jsOrderStatusBtn")){
-        
-        let status = e.target.dataset.status;
+        //切換訂單付款狀態
+        let status = e.target.getAttribute("data-status");
         let putStatusId = e.target.dataset.id;
         console.log("看狀態",status)
         putOrderStatus(status,putStatusId);
 
     }
 
-})
+});
 
 // 刪除全部訂單(管理者)
 function deleteAllOrder() {
@@ -169,15 +168,13 @@ function deleteAllOrder() {
 
 // 修改訂單狀態
 function putOrderStatus(status,putStatusId){
-    console.log(status,putStatusId);
-    status = Boolean(status);
-    let newStatus ;
-    if(status == true){
-        newStatus = false
+
+    let newStatus = true;
+    if(status == "true"){
+        newStatus=false;
     }else{
-        newStatus = true
+        newStatus=true;  
     };
-    console.log(newStatus)
     // put(網址,自訂data,headers)
     axios.put(`https://livejs-api.hexschool.io/api/livejs/v1/admin/${api_path}/orders`,
     //
@@ -197,7 +194,7 @@ function putOrderStatus(status,putStatusId){
     .then(function(res){
         console.log(res.data);
         alert("成功修改訂單");
-        getOrderList();
+        getOrderList(res.data);
     })
     .catch(function (error) {
         console.log(error);
@@ -216,6 +213,7 @@ function deleteOrder(orderId){
     )
     .then(function (response) {
         console.log(response.data);
+        alert("成功刪除此訂單")
         getOrderList();
         renderC3();
       })
@@ -226,4 +224,5 @@ function deleteOrder(orderId){
 
 }
 
-init()
+init();
+}
